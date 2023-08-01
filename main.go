@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"lla/api"
 	"lla/config"
 	"log"
+	"os"
 )
 
 func main() {
@@ -12,16 +14,21 @@ func main() {
 		log.Fatal("cannot load config: ", error)
 	}
 
-	runRestfulServer(config)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Use a default port if not provided by Heroku
+	}
+
+	runRestfulServer(config, port)
 }
 
-func runRestfulServer(config *config.Config) {
+func runRestfulServer(config *config.Config, port string) {
 	server, err := api.NewServer()
 	if err != nil {
 		log.Fatal("cannot create server: ", err)
 	}
 
-	err = server.Start(config.HTTPServerAddress)
+	err = server.Start(fmt.Sprintf(":%s", port))
 	if err != nil {
 		log.Fatal("cannot start server: ", err)
 	}

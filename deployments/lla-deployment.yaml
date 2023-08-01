@@ -9,7 +9,7 @@ spec:
       app: lla-app
   template:
     metadata:
-      labels:
+      labels: 
         app: lla-app
     spec:
       containers:

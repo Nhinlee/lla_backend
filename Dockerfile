@@ -8,6 +8,6 @@ RUN go mod download
 
 RUN go build -o ./lla-app
 
-EXPOSE 8080
+# EXPOSE 8080
 
-CMD [ "./lla-app" ]
+CMD [ "./lla-app"]
