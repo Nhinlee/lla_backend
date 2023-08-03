@@ -6,22 +6,26 @@ on:
       - opened
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  deploy-lla-server:
     # if: github.event.pull_request.merged == true
+    name: Deploy LLA server to Heroku
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout runner source
         uses: actions/checkout@v3
+    # steps:
+    #   - name: Checkout code
+    #     uses: actions/checkout@v3
 
-      - name: Login to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.14
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: llapp
-          heroku_email: nhinlechi@gmail.com
+    #   - name: Login to Heroku
+    #     uses: akhileshns/heroku-deploy@v3.12.14
+    #     with:
+    #       heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+    #       heroku_app_name: llapp
+    #       heroku_email: nhinlechi@gmail.com
 
-      - name: Build and Deploy to Heroku
-        run: |
-          heroku container:login
-          heroku container:push web -a llapp
-          heroku container:release web -a llapp
+    #   - name: Build and Deploy to Heroku
+    #     run: |
+    #       heroku container:login
+    #       heroku container:push web -a llapp
+    #       heroku container:release web -a llapp
