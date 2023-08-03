@@ -20,6 +20,9 @@ func (s *Server) SetupRouter() {
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
 
+	// Test auto ci/cd
+	router.GET("/test", s.handleGetLla)
+
 	s.router = router
 }
 
