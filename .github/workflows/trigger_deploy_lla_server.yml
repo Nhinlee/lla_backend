@@ -4,13 +4,14 @@ on:
   pull_request:
     branches:
       - master
+    types: [closed]
 
 
   workflow_dispatch:
 
 jobs:
   deploy-lla-server:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     name: Deploy LLA server to Heroku
     runs-on: ubuntu-latest
     env:
