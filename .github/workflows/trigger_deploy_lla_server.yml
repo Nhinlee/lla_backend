@@ -3,7 +3,8 @@ name: Deploy LLA server to Heroku
 on:
   pull_request:
     branches:
-      - 'main'
+      - main
+      - master
     types:
       - opened
 
