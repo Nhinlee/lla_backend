@@ -26,9 +26,3 @@ jobs:
           heroku_api_key: ${{env.HEROKU_API_KEY}}
           heroku_app_name: llapp
           heroku_email: nhinlechi@gmail.com
-
-      - name: Build and Deploy to Heroku
-        run: |
-          heroku container:login
-          heroku container:push web -a llapp
-          heroku container:release web -a llapp
