@@ -3,17 +3,11 @@ name: Deploy LLA server to Heroku
 on:
   pull_request:
     branches:
-      - main
       - master
     types:
       - opened
 
   workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'main'
 
 jobs:
   deploy-lla-server:
