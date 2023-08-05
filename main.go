@@ -6,6 +6,10 @@ import (
 	"lla/config"
 	"log"
 	"os"
+
+	"database/sql"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -17,6 +21,14 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // Use a default port if not provided by Heroku
+	}
+
+	// Connect to database
+	_, err := sql.Open("postgres", config.DBConfig.GetDBConnection())
+	if err != nil {
+		log.Fatal("cannot connect to database: ", err)
+	} else {
+		fmt.Println("connect to database successfully!")
 	}
 
 	runRestfulServer(config, port)

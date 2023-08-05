@@ -18,3 +18,6 @@ migrate-down:
 
 migrate-down1:
 	migrate -path db/migration -database "postgresql://root:nhin123456@localhost:5432/lla?sslmode=disable" -verbose down 1
+
+run-local-server:
+	IS_LOCAL=true go run main.go
