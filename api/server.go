@@ -1,16 +1,20 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
+	db "lla/db/sqlc"
 
+	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
 	router *gin.Engine
+	store  db.Store
 }
 
-func NewServer() (*Server, error) {
-	server := &Server{}
+func NewServer(store db.Store) (*Server, error) {
+	server := &Server{
+		store: store,
+	}
 
 	server.SetupRouter()
 
@@ -23,8 +27,8 @@ func (s *Server) SetupRouter() {
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
 
-	// Test auto ci/cd
-	router.GET("/test", s.handleGetLla)
+	// Learning items
+	router.POST("/learning-items", s.handleUpsertLearningItem)
 
 	s.router = router
 }

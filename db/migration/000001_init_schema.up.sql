@@ -1,8 +1,8 @@
 CREATE TABLE learning_item (
-    id text primary key,
-    image_link text,
-    english_word text,
-    vietnamese_word text,
+    id text primary key NOT NULL,
+    image_link text NOT NULL,
+    english_word text NOT NULL,
+    vietnamese_word text NOT NULL,
     english_sentences text[]
 );
 
