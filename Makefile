@@ -21,3 +21,6 @@ migrate-down1:
 
 run-local-server:
 	IS_LOCAL=true go run main.go
+
+sqlc:
+	sqlc generate
