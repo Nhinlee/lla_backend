@@ -22,7 +22,7 @@ type DBConfig struct {
 func (dbConfig *DBConfig) GetDBConnection() string {
 	sslMode := "disable"
 	if dbConfig.SSLMode {
-		sslMode = "required"
+		sslMode = "require"
 	}
 
 	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=%s",
