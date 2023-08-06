@@ -39,7 +39,7 @@ func LoadConfig() (*Config, error) {
 			DBConfig: &DBConfig{
 				DBHost:     "localhost",
 				DBPort:     "5432",
-				DBUser:     "admin",
+				DBUser:     "root",
 				DBPassword: "nhin123456",
 				DBName:     "lla",
 				SSLMode:    false,

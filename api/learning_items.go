@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oklog/ulid"
+	"github.com/oklog/ulid/v2"
 )
 
 type CreateLearningItemRequest struct {
@@ -23,7 +23,7 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 	}
 
 	learningItem, err := s.store.CreateLearningItem(c, db.CreateLearningItemParams{
-		ID:               ulid.MustNew(ulid.Now(), nil).String(),
+		ID:               ulid.Make().String(),
 		ImageLink:        req.ImageUrl,
 		EnglishWord:      req.EnglishWord,
 		VietnameseWord:   req.VietnameseWord,
