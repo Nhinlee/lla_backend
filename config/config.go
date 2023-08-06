@@ -20,12 +20,18 @@ type DBConfig struct {
 
 // Expose function to get format string of database connection
 func (dbConfig *DBConfig) GetDBConnection() string {
-	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
+	sslMode := "disable"
+	if dbConfig.SSLMode {
+		sslMode = "required"
+	}
+
+	connStr := fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=%s",
 		dbConfig.DBUser,
 		dbConfig.DBPassword,
 		dbConfig.DBHost,
 		dbConfig.DBPort,
 		dbConfig.DBName,
+		sslMode,
 	)
 
 	return connStr
