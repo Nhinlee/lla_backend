@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -41,6 +44,12 @@ func LoadConfig() (*Config, error) {
 	isLocal := os.Getenv("IS_LOCAL")
 
 	if isLocal == "true" {
+		// Load environment variables from the .env file
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+
 		return &Config{
 			DBConfig: &DBConfig{
 				DBHost:     "localhost",

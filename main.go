@@ -1,14 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"lla/api"
 	"lla/config"
 	db "lla/db/sqlc"
+	fs "lla/golibs/file_store"
+
 	"log"
 	"os"
-
-	"database/sql"
 
 	_ "github.com/lib/pq"
 )
@@ -19,11 +20,6 @@ func main() {
 		log.Fatal("cannot load config: ", error)
 	}
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080" // Use a default port if not provided by Heroku
-	}
-
 	// Connect to database
 	conn, err := sql.Open("postgres", config.DBConfig.GetDBConnection())
 	if err != nil {
@@ -31,16 +27,26 @@ func main() {
 	} else {
 		fmt.Println("connect to database successfully!")
 	}
-
 	store := db.NewStore(conn)
 
-	runRestfulServer(config, port, store)
+	// Connect to file store (GCS)
+	gcsStore, err := fs.NewGCSFileStore()
+	if err != nil {
+		log.Fatal("cannot connect to file store: ", err)
+	}
+
+	runRestfulServer(store, gcsStore)
 }
 
-func runRestfulServer(config *config.Config, port string, store db.Store) {
-	server, err := api.NewServer(store)
+func runRestfulServer(store db.Store, fileStore fs.FileStore) {
+	server, err := api.NewServer(store, fileStore)
 	if err != nil {
 		log.Fatal("cannot create server: ", err)
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // Use a default port if not provided by Heroku
 	}
 
 	err = server.Start(fmt.Sprintf(":%s", port))
