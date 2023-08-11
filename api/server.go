@@ -3,17 +3,21 @@ package api
 import (
 	db "lla/db/sqlc"
 
+	fs "lla/golibs/file_store"
+
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	router *gin.Engine
-	store  db.Store
+	router    *gin.Engine
+	store     db.Store
+	fileStore fs.FileStore
 }
 
-func NewServer(store db.Store) (*Server, error) {
+func NewServer(store db.Store, filestore fs.FileStore) (*Server, error) {
 	server := &Server{
-		store: store,
+		store:     store,
+		fileStore: filestore,
 	}
 
 	server.SetupRouter()
@@ -27,8 +31,11 @@ func (s *Server) SetupRouter() {
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
 
+	// Common
+	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
+
 	// Learning items
-	router.POST("/learning-items", s.handleUpsertLearningItem)
+	router.POST("/learning_items", s.handleUpsertLearningItem)
 
 	s.router = router
 }
