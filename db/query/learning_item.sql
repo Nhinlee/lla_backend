@@ -12,3 +12,9 @@ INSERT INTO learning_item (
     $4,
     $5
 ) RETURNING *;
+
+-- name: GetLearningItem :many
+SELECT * FROM learning_item;
+
+-- name: DeleteLearningItem :one
+DELETE FROM learning_item WHERE id = $1 RETURNING *;

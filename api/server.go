@@ -36,6 +36,8 @@ func (s *Server) SetupRouter() {
 
 	// Learning items
 	router.POST("/learning_items", s.handleUpsertLearningItem)
+	router.GET("/learning_items", s.handleGetLearningItems)
+	router.DELETE("/learning_items/:id", s.handleDeleteLearningItem)
 
 	s.router = router
 }
