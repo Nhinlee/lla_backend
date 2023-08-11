@@ -38,3 +38,27 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 		"id": learningItem.ID,
 	})
 }
+
+func (s *Server) handleGetLearningItems(c *gin.Context) {
+	learningItems, err := s.store.GetLearningItem(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(200, learningItems)
+}
+
+func (s *Server) handleDeleteLearningItem(c *gin.Context) {
+	id := c.Param("id")
+
+	item, err := s.store.DeleteLearningItem(c, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"id": item.ID,
+	})
+}

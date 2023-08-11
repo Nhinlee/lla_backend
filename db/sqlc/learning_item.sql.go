@@ -53,3 +53,53 @@ func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItem
 	)
 	return i, err
 }
+
+const deleteLearningItem = `-- name: DeleteLearningItem :one
+DELETE FROM learning_item WHERE id = $1 RETURNING id, image_link, english_word, vietnamese_word, english_sentences
+`
+
+func (q *Queries) DeleteLearningItem(ctx context.Context, id string) (LearningItem, error) {
+	row := q.db.QueryRowContext(ctx, deleteLearningItem, id)
+	var i LearningItem
+	err := row.Scan(
+		&i.ID,
+		&i.ImageLink,
+		&i.EnglishWord,
+		&i.VietnameseWord,
+		pq.Array(&i.EnglishSentences),
+	)
+	return i, err
+}
+
+const getLearningItem = `-- name: GetLearningItem :many
+SELECT id, image_link, english_word, vietnamese_word, english_sentences FROM learning_item
+`
+
+func (q *Queries) GetLearningItem(ctx context.Context) ([]LearningItem, error) {
+	rows, err := q.db.QueryContext(ctx, getLearningItem)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LearningItem{}
+	for rows.Next() {
+		var i LearningItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.ImageLink,
+			&i.EnglishWord,
+			&i.VietnameseWord,
+			pq.Array(&i.EnglishSentences),
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
