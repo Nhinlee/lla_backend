@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy-lla-server:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     name: Deploy LLA server to Heroku
     runs-on: ubuntu-latest
     env:
