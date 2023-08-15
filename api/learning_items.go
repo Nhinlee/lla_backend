@@ -9,7 +9,7 @@ import (
 )
 
 type CreateLearningItemRequest struct {
-	ImageUrl         string   `json:"image_url" binding:"required"`
+	ImageLink        string   `json:"image_link" binding:"required"`
 	EnglishWord      string   `json:"english_word" binding:"required"`
 	VietnameseWord   string   `json:"vietnamese_word" binding:"required"`
 	EnglishSentences []string `json:"english_sentences"`
@@ -24,7 +24,7 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 
 	learningItem, err := s.store.CreateLearningItem(c, db.CreateLearningItemParams{
 		ID:               ulid.Make().String(),
-		ImageLink:        req.ImageUrl,
+		ImageLink:        req.ImageLink,
 		EnglishWord:      req.EnglishWord,
 		VietnameseWord:   req.VietnameseWord,
 		EnglishSentences: req.EnglishSentences,
