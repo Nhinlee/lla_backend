@@ -17,6 +17,7 @@ type CreateLearningItemRequest struct {
 
 func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 	var req CreateLearningItemRequest
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, errorResponse(err))
 		return
