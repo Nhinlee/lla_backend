@@ -8,6 +8,7 @@ type GeneratePresignedURLRequest struct {
 
 type GeneratePresignedURLResponse struct {
 	PresignedURL string `json:"presigned_url"`
+	PublicURL    string `json:"public_url"`
 }
 
 func (s *Server) handleGeneratePresignedURL(c *gin.Context) {
@@ -25,5 +26,6 @@ func (s *Server) handleGeneratePresignedURL(c *gin.Context) {
 
 	c.JSON(200, GeneratePresignedURLResponse{
 		PresignedURL: url.String(),
+		PublicURL:    s.fileStore.GeneratePublicObjectURL(req.FileName),
 	})
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -103,4 +104,14 @@ func (s *GCSFileStore) initResumableUploadSession(method, signUrl, contentType, 
 	sessionURI := res.Header.Get("Location")
 
 	return url.Parse(sessionURI)
+}
+
+func (s *GCSFileStore) GeneratePublicObjectURL(objectName string) string {
+	dir, filename := filepath.Dir(objectName), filepath.Base(objectName)
+	if dir == "." {
+		filename = url.PathEscape(filename)
+	} else {
+		filename = fmt.Sprintf("%s/%s", dir, url.PathEscape(filename))
+	}
+	return fmt.Sprintf("%s/%s/%s", "https://storage.googleapis.com", bucketName, filename)
 }
