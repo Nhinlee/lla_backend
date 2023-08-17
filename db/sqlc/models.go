@@ -4,14 +4,22 @@
 
 package db
 
-import ()
+import (
+	"database/sql"
+	"time"
+)
 
 type LearningItem struct {
-	ID               string   `json:"id"`
-	ImageLink        string   `json:"image_link"`
-	EnglishWord      string   `json:"english_word"`
-	VietnameseWord   string   `json:"vietnamese_word"`
-	EnglishSentences []string `json:"english_sentences"`
+	ID               string         `json:"id"`
+	ImageLink        string         `json:"image_link"`
+	EnglishWord      string         `json:"english_word"`
+	VietnameseWord   sql.NullString `json:"vietnamese_word"`
+	EnglishSentences []string       `json:"english_sentences"`
+	CreatedAt        time.Time      `json:"created_at"`
+	UpdatedAt        time.Time      `json:"updated_at"`
+	CompletedAt      sql.NullTime   `json:"completed_at"`
+	DeletedAt        sql.NullTime   `json:"deleted_at"`
+	UserID           sql.NullString `json:"user_id"`
 }
 
 type Test struct {
@@ -19,9 +27,12 @@ type Test struct {
 }
 
 type User struct {
-	UserID    string `json:"user_id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	ID                string       `json:"id"`
+	FirstName         string       `json:"first_name"`
+	LastName          string       `json:"last_name"`
+	Email             string       `json:"email"`
+	EncryptedPassword string       `json:"encrypted_password"`
+	CreatedAt         time.Time    `json:"created_at"`
+	UpdatedAt         time.Time    `json:"updated_at"`
+	DeletedAt         sql.NullTime `json:"deleted_at"`
 }

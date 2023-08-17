@@ -117,17 +117,22 @@ func (s *GCSFileStore) GeneratePublicObjectURL(objectName string) string {
 }
 
 func (g *GCSFileStore) MoveObject(ctx context.Context, srcObjectName, destObjetName string) error {
-	client := g.client
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %v", err)
+	}
 
 	src := client.Bucket(bucketName).Object(srcObjectName)
 	dst := client.Bucket(bucketName).Object(destObjetName)
 
-	// Copy the object to the new bucket.
+	if _, err := src.Attrs(ctx); err != nil {
+		return fmt.Errorf("Object(%s/%s).Attrs: %v", bucketName, srcObjectName, err)
+	}
+
 	if _, err := dst.CopierFrom(src).Run(ctx); err != nil {
 		return fmt.Errorf("Object(%s).CopierFrom(%s).Run: %v", bucketName, srcObjectName, err)
 	}
 
-	// Delete the old object.
 	if err := src.Delete(ctx); err != nil {
 		return fmt.Errorf("Object(%s/%s).Delete: %v", bucketName, srcObjectName, err)
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	db "lla/db/sqlc"
 	"net/http"
 
@@ -27,7 +28,7 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 		ID:               ulid.Make().String(),
 		ImageLink:        req.ImageLink,
 		EnglishWord:      req.EnglishWord,
-		VietnameseWord:   req.VietnameseWord,
+		VietnameseWord:   sql.NullString{String: req.VietnameseWord, Valid: true},
 		EnglishSentences: req.EnglishSentences,
 	})
 	if err != nil {
@@ -41,7 +42,7 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 }
 
 func (s *Server) handleGetLearningItems(c *gin.Context) {
-	learningItems, err := s.store.GetLearningItem(c)
+	learningItems, err := s.store.GetAllLearningItems(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

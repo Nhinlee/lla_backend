@@ -7,32 +7,40 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/lib/pq"
 )
 
 const createLearningItem = `-- name: CreateLearningItem :one
-INSERT INTO learning_item (
+INSERT INTO learning_items (
     id,
     image_link,
     english_word,
     vietnamese_word,
-    english_sentences
+    english_sentences,
+    created_at,
+    updated_at,
+    user_id
 ) VALUES (
     $1,
     $2,
     $3,
     $4,
-    $5
-) RETURNING id, image_link, english_word, vietnamese_word, english_sentences
+    $5,
+    now(),
+    now(),
+    $6
+) RETURNING id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id
 `
 
 type CreateLearningItemParams struct {
-	ID               string   `json:"id"`
-	ImageLink        string   `json:"image_link"`
-	EnglishWord      string   `json:"english_word"`
-	VietnameseWord   string   `json:"vietnamese_word"`
-	EnglishSentences []string `json:"english_sentences"`
+	ID               string         `json:"id"`
+	ImageLink        string         `json:"image_link"`
+	EnglishWord      string         `json:"english_word"`
+	VietnameseWord   sql.NullString `json:"vietnamese_word"`
+	EnglishSentences []string       `json:"english_sentences"`
+	UserID           sql.NullString `json:"user_id"`
 }
 
 func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItemParams) (LearningItem, error) {
@@ -42,6 +50,7 @@ func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItem
 		arg.EnglishWord,
 		arg.VietnameseWord,
 		pq.Array(arg.EnglishSentences),
+		arg.UserID,
 	)
 	var i LearningItem
 	err := row.Scan(
@@ -50,12 +59,17 @@ func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItem
 		&i.EnglishWord,
 		&i.VietnameseWord,
 		pq.Array(&i.EnglishSentences),
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CompletedAt,
+		&i.DeletedAt,
+		&i.UserID,
 	)
 	return i, err
 }
 
 const deleteLearningItem = `-- name: DeleteLearningItem :one
-DELETE FROM learning_item WHERE id = $1 RETURNING id, image_link, english_word, vietnamese_word, english_sentences
+UPDATE learning_items SET deleted_at = now() WHERE id = $1 RETURNING id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id
 `
 
 func (q *Queries) DeleteLearningItem(ctx context.Context, id string) (LearningItem, error) {
@@ -67,16 +81,23 @@ func (q *Queries) DeleteLearningItem(ctx context.Context, id string) (LearningIt
 		&i.EnglishWord,
 		&i.VietnameseWord,
 		pq.Array(&i.EnglishSentences),
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CompletedAt,
+		&i.DeletedAt,
+		&i.UserID,
 	)
 	return i, err
 }
 
-const getLearningItem = `-- name: GetLearningItem :many
-SELECT id, image_link, english_word, vietnamese_word, english_sentences FROM learning_item
+const getAllLearningItems = `-- name: GetAllLearningItems :many
+SELECT id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id FROM learning_items 
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
 `
 
-func (q *Queries) GetLearningItem(ctx context.Context) ([]LearningItem, error) {
-	rows, err := q.db.QueryContext(ctx, getLearningItem)
+func (q *Queries) GetAllLearningItems(ctx context.Context) ([]LearningItem, error) {
+	rows, err := q.db.QueryContext(ctx, getAllLearningItems)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +111,11 @@ func (q *Queries) GetLearningItem(ctx context.Context) ([]LearningItem, error) {
 			&i.EnglishWord,
 			&i.VietnameseWord,
 			pq.Array(&i.EnglishSentences),
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CompletedAt,
+			&i.DeletedAt,
+			&i.UserID,
 		); err != nil {
 			return nil, err
 		}
@@ -102,4 +128,26 @@ func (q *Queries) GetLearningItem(ctx context.Context) ([]LearningItem, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const hardDeleteLearningItem = `-- name: HardDeleteLearningItem :one
+DELETE FROM learning_items WHERE id = $1 RETURNING id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id
+`
+
+func (q *Queries) HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error) {
+	row := q.db.QueryRowContext(ctx, hardDeleteLearningItem, id)
+	var i LearningItem
+	err := row.Scan(
+		&i.ID,
+		&i.ImageLink,
+		&i.EnglishWord,
+		&i.VietnameseWord,
+		pq.Array(&i.EnglishSentences),
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CompletedAt,
+		&i.DeletedAt,
+		&i.UserID,
+	)
+	return i, err
 }
