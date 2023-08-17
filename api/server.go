@@ -33,6 +33,7 @@ func (s *Server) SetupRouter() {
 
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
+	// router.POST("/delete_object", s.handleDeleteObject)
 
 	// Learning items
 	router.POST("/learning_items", s.handleUpsertLearningItem)

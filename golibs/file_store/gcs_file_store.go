@@ -115,3 +115,21 @@ func (s *GCSFileStore) GeneratePublicObjectURL(objectName string) string {
 	}
 	return fmt.Sprintf("%s/%s/%s", "https://storage.googleapis.com", bucketName, filename)
 }
+
+func (g *GCSFileStore) MoveObject(ctx context.Context, srcObjectName, destObjetName string) error {
+	client := g.client
+
+	src := client.Bucket(bucketName).Object(srcObjectName)
+	dst := client.Bucket(bucketName).Object(destObjetName)
+
+	// Copy the object to the new bucket.
+	if _, err := dst.CopierFrom(src).Run(ctx); err != nil {
+		return fmt.Errorf("Object(%s).CopierFrom(%s).Run: %v", bucketName, srcObjectName, err)
+	}
+
+	// Delete the old object.
+	if err := src.Delete(ctx); err != nil {
+		return fmt.Errorf("Object(%s/%s).Delete: %v", bucketName, srcObjectName, err)
+	}
+	return nil
+}
