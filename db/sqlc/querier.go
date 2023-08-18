@@ -15,6 +15,7 @@ type Querier interface {
 	DeleteTopic(ctx context.Context, id string) (Topic, error)
 	GetAllLearningItems(ctx context.Context) ([]LearningItem, error)
 	GetAllTopics(ctx context.Context) ([]GetAllTopicsRow, error)
+	GetLearningItemsByTopicAndCompleted(ctx context.Context, arg GetLearningItemsByTopicAndCompletedParams) ([]LearningItem, error)
 	GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopicsAndTotalLearningItemsRow, error)
 	HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
 }

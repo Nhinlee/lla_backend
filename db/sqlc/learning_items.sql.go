@@ -21,7 +21,8 @@ INSERT INTO learning_items (
     english_sentences,
     created_at,
     updated_at,
-    user_id
+    user_id,
+    topic_id
 ) VALUES (
     $1,
     $2,
@@ -30,7 +31,8 @@ INSERT INTO learning_items (
     $5,
     now(),
     now(),
-    $6
+    $6,
+    $7
 ) RETURNING id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id, topic_id
 `
 
@@ -41,6 +43,7 @@ type CreateLearningItemParams struct {
 	VietnameseWord   sql.NullString `json:"vietnamese_word"`
 	EnglishSentences []string       `json:"english_sentences"`
 	UserID           sql.NullString `json:"user_id"`
+	TopicID          sql.NullString `json:"topic_id"`
 }
 
 func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItemParams) (LearningItem, error) {
@@ -51,6 +54,7 @@ func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItem
 		arg.VietnameseWord,
 		pq.Array(arg.EnglishSentences),
 		arg.UserID,
+		arg.TopicID,
 	)
 	var i LearningItem
 	err := row.Scan(

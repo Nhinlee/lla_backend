@@ -7,7 +7,8 @@ INSERT INTO learning_items (
     english_sentences,
     created_at,
     updated_at,
-    user_id
+    user_id,
+    topic_id
 ) VALUES (
     $1,
     $2,
@@ -16,7 +17,8 @@ INSERT INTO learning_items (
     $5,
     now(),
     now(),
-    $6
+    $6,
+    $7
 ) RETURNING *;
 
 -- name: GetAllLearningItems :many
@@ -29,4 +31,3 @@ UPDATE learning_items SET deleted_at = now() WHERE id = $1 RETURNING *;
 
 -- name: HardDeleteLearningItem :one
 DELETE FROM learning_items WHERE id = $1 RETURNING *;
-
