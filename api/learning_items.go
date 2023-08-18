@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"lla/api/entity"
 	db "lla/db/sqlc"
 	"net/http"
 
@@ -61,7 +62,7 @@ func (s *Server) handleGetLearningItems(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, learningItems)
+	c.JSON(200, entity.CreateLearningItemsFromLIs(learningItems))
 }
 
 func (s *Server) handleDeleteLearningItem(c *gin.Context) {

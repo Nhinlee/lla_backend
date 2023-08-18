@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"lla/api/entity"
 	db "lla/db/sqlc"
 	"net/http"
 
@@ -20,7 +21,7 @@ func (s *Server) handleStartLearningFlashcards(c *gin.Context) {
 		return
 	}
 
-	flashcards, err := s.store.GetLearningItemsByTopicAndCompleted(c, db.GetLearningItemsByTopicAndCompletedParams{
+	lis, err := s.store.GetLearningItemsByTopicAndCompleted(c, db.GetLearningItemsByTopicAndCompletedParams{
 		Limit:   req.Limit,
 		TopicID: sql.NullString{String: req.TopicID, Valid: req.TopicID != ""},
 	})
@@ -29,5 +30,5 @@ func (s *Server) handleStartLearningFlashcards(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, flashcards)
+	c.JSON(http.StatusOK, entity.CreateFlashCardsFromLIs(lis))
 }
