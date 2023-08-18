@@ -36,10 +36,10 @@ func (s *Server) SetupRouter() {
 	// router.POST("/delete_object", s.handleDeleteObject)
 
 	// Learning items
-	router.POST("/learning-items", s.handleCreateLearningItem)
+	router.POST("/learning_items", s.handleCreateLearningItem)
 	router.GET("/learning_items", s.handleGetLearningItems)
 	router.DELETE("/learning_items/:id", s.handleDeleteLearningItem)
-	router.PUT("/learning-items", s.handleUpdateLearningItem)
+	router.PUT("/learning_items", s.handleUpdateLearningItem)
 
 	// Topics
 	router.POST("/topics", s.handleUpsertTopic)
