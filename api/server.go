@@ -33,21 +33,21 @@ func (s *Server) SetupRouter() {
 
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
-	router.POST("/delete_object", s.handleDeleteObject)
+	// router.POST("/delete_object", s.handleDeleteObject)
 
 	// Learning items
-	router.POST("/learning_items/add", s.handleCreateLearningItem)
+	router.POST("/learning-items", s.handleCreateLearningItem)
 	router.GET("/learning_items", s.handleGetLearningItems)
 	router.DELETE("/learning_items/:id", s.handleDeleteLearningItem)
-	router.POST("/learning_items/edit", s.handleUpdateLearningItem)
+	router.PUT("/learning-items", s.handleUpdateLearningItem)
 
 	// Topics
 	router.POST("/topics", s.handleUpsertTopic)
 	router.GET("/topics", s.handleGetTopics)
-	router.GET("/topics_and_total_learning_items", s.handleGetTopicsAndTotalLearningItems)
+	router.GET("/topics/with_learning_items_count", s.handleGetTopicsAndTotalLearningItems)
 
 	// Flashcards
-	router.POST("/flashcards/learning", s.handleStartLearningFlashcards)
+	router.POST("/flashcards/start_learning", s.handleStartLearningFlashcards)
 
 	s.router = router
 }
