@@ -20,10 +20,19 @@ type LearningItem struct {
 	CompletedAt      sql.NullTime   `json:"completed_at"`
 	DeletedAt        sql.NullTime   `json:"deleted_at"`
 	UserID           sql.NullString `json:"user_id"`
+	TopicID          sql.NullString `json:"topic_id"`
 }
 
 type Test struct {
 	TestID string `json:"test_id"`
+}
+
+type Topic struct {
+	ID        string       `json:"id"`
+	Name      string       `json:"name"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
 }
 
 type User struct {

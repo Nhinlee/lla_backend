@@ -29,3 +29,4 @@ UPDATE learning_items SET deleted_at = now() WHERE id = $1 RETURNING *;
 
 -- name: HardDeleteLearningItem :one
 DELETE FROM learning_items WHERE id = $1 RETURNING *;
+
