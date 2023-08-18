@@ -18,7 +18,7 @@ type CreateLearningItemRequest struct {
 	TopicID          string   `json:"topic_id"`
 }
 
-func (s *Server) handleUpsertLearningItem(c *gin.Context) {
+func (s *Server) handleCreateLearningItem(c *gin.Context) {
 	var req CreateLearningItemRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -77,4 +77,65 @@ func (s *Server) handleDeleteLearningItem(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"id": item.ID,
 	})
+}
+
+type UpdateLearningItemRequest struct {
+	ID               string   `json:"id" binding:"required"`
+	ImageLink        string   `json:"image_link"`
+	EnglishWord      string   `json:"english_word"`
+	VietnameseWord   string   `json:"vietnamese_word"`
+	EnglishSentences []string `json:"english_sentences"`
+	TopicID          string   `json:"topic_id"`
+}
+
+func (s *Server) handleUpdateLearningItem(c *gin.Context) {
+	var req UpdateLearningItemRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	updatedItem, err := s.store.GetLearningItemById(c, req.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// apply updates
+	if req.ImageLink != "" {
+		updatedItem.ImageLink = req.ImageLink
+	}
+
+	if req.EnglishWord != "" {
+		updatedItem.EnglishWord = req.EnglishWord
+	}
+
+	if req.VietnameseWord != "" {
+		updatedItem.VietnameseWord = sql.NullString{String: req.VietnameseWord, Valid: req.VietnameseWord != ""}
+	}
+
+	if len(req.EnglishSentences) > 0 {
+		updatedItem.EnglishSentences = req.EnglishSentences
+	}
+
+	if req.TopicID != "" {
+		updatedItem.TopicID = sql.NullString{String: req.TopicID, Valid: req.TopicID != ""}
+	}
+
+	err = s.store.UpdateLearningItem(c, db.UpdateLearningItemParams{
+		ID:               updatedItem.ID,
+		ImageLink:        updatedItem.ImageLink,
+		EnglishWord:      updatedItem.EnglishWord,
+		VietnameseWord:   updatedItem.VietnameseWord,
+		EnglishSentences: updatedItem.EnglishSentences,
+		TopicID:          updatedItem.TopicID,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(200, gin.H{})
 }

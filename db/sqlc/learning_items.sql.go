@@ -137,6 +137,30 @@ func (q *Queries) GetAllLearningItems(ctx context.Context) ([]LearningItem, erro
 	return items, nil
 }
 
+const getLearningItemById = `-- name: GetLearningItemById :one
+SELECT id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id, topic_id FROM learning_items 
+WHERE id = $1 AND deleted_at IS NULL
+`
+
+func (q *Queries) GetLearningItemById(ctx context.Context, id string) (LearningItem, error) {
+	row := q.db.QueryRowContext(ctx, getLearningItemById, id)
+	var i LearningItem
+	err := row.Scan(
+		&i.ID,
+		&i.ImageLink,
+		&i.EnglishWord,
+		&i.VietnameseWord,
+		pq.Array(&i.EnglishSentences),
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CompletedAt,
+		&i.DeletedAt,
+		&i.UserID,
+		&i.TopicID,
+	)
+	return i, err
+}
+
 const hardDeleteLearningItem = `-- name: HardDeleteLearningItem :one
 DELETE FROM learning_items WHERE id = $1 RETURNING id, image_link, english_word, vietnamese_word, english_sentences, created_at, updated_at, completed_at, deleted_at, user_id, topic_id
 `
@@ -158,4 +182,39 @@ func (q *Queries) HardDeleteLearningItem(ctx context.Context, id string) (Learni
 		&i.TopicID,
 	)
 	return i, err
+}
+
+const updateLearningItem = `-- name: UpdateLearningItem :exec
+UPDATE learning_items SET
+    image_link = $2,
+    english_word = $3,
+    vietnamese_word = $4,
+    english_sentences = $5,
+    updated_at = now(),
+    completed_at = $6,
+    topic_id = $7
+WHERE id = $1
+`
+
+type UpdateLearningItemParams struct {
+	ID               string         `json:"id"`
+	ImageLink        string         `json:"image_link"`
+	EnglishWord      string         `json:"english_word"`
+	VietnameseWord   sql.NullString `json:"vietnamese_word"`
+	EnglishSentences []string       `json:"english_sentences"`
+	CompletedAt      sql.NullTime   `json:"completed_at"`
+	TopicID          sql.NullString `json:"topic_id"`
+}
+
+func (q *Queries) UpdateLearningItem(ctx context.Context, arg UpdateLearningItemParams) error {
+	_, err := q.db.ExecContext(ctx, updateLearningItem,
+		arg.ID,
+		arg.ImageLink,
+		arg.EnglishWord,
+		arg.VietnameseWord,
+		pq.Array(arg.EnglishSentences),
+		arg.CompletedAt,
+		arg.TopicID,
+	)
+	return err
 }
