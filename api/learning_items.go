@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	db "lla/db/sqlc"
 	"net/http"
 
@@ -13,6 +14,7 @@ type CreateLearningItemRequest struct {
 	EnglishWord      string   `json:"english_word" binding:"required"`
 	VietnameseWord   string   `json:"vietnamese_word" binding:"required"`
 	EnglishSentences []string `json:"english_sentences"`
+	TopicID          string   `json:"topic_id"`
 }
 
 func (s *Server) handleUpsertLearningItem(c *gin.Context) {
@@ -27,8 +29,9 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 		ID:               ulid.Make().String(),
 		ImageLink:        req.ImageLink,
 		EnglishWord:      req.EnglishWord,
-		VietnameseWord:   req.VietnameseWord,
+		VietnameseWord:   sql.NullString{String: req.VietnameseWord, Valid: req.VietnameseWord != ""},
 		EnglishSentences: req.EnglishSentences,
+		TopicID:          sql.NullString{String: req.TopicID, Valid: req.TopicID != ""},
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -40,8 +43,19 @@ func (s *Server) handleUpsertLearningItem(c *gin.Context) {
 	})
 }
 
+// type LearningItem struct {
+// 	ID               string   `json:"id"`
+// 	ImageLink        string   `json:"image_link"`
+// 	EnglishWord      string   `json:"english_word"`
+// 	VietnameseWord   string   `json:"vietnamese_word"`
+// 	EnglishSentences []string `json:"english_sentences"`
+// 	CreatedAt        string   `json:"created_at"`
+// 	UserID           string   `json:"user_id"`
+// 	TopicID          string   `json:"topic_id"`
+// }
+
 func (s *Server) handleGetLearningItems(c *gin.Context) {
-	learningItems, err := s.store.GetLearningItem(c)
+	learningItems, err := s.store.GetAllLearningItems(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

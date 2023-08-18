@@ -10,8 +10,14 @@ import (
 
 type Querier interface {
 	CreateLearningItem(ctx context.Context, arg CreateLearningItemParams) (LearningItem, error)
+	CreateTopic(ctx context.Context, arg CreateTopicParams) (Topic, error)
 	DeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
-	GetLearningItem(ctx context.Context) ([]LearningItem, error)
+	DeleteTopic(ctx context.Context, id string) (Topic, error)
+	GetAllLearningItems(ctx context.Context) ([]LearningItem, error)
+	GetAllTopics(ctx context.Context) ([]GetAllTopicsRow, error)
+	GetLearningItemsByTopicAndCompleted(ctx context.Context, arg GetLearningItemsByTopicAndCompletedParams) ([]LearningItem, error)
+	GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopicsAndTotalLearningItemsRow, error)
+	HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
 }
 
 var _ Querier = (*Queries)(nil)
