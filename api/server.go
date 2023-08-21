@@ -47,7 +47,7 @@ func (s *Server) SetupRouter() {
 	router.GET("/topics/with_learning_items_count", s.handleGetTopicsAndTotalLearningItems)
 
 	// Flashcards
-	router.POST("/flashcards/start_learning", s.handleStartLearningFlashcards)
+	router.POST("/flashcards/learning", s.handleStartLearningFlashcards)
 
 	s.router = router
 }
