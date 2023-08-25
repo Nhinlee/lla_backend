@@ -13,7 +13,7 @@ import (
 type CreateLearningItemRequest struct {
 	ImageLink        string   `json:"image_link" binding:"required"`
 	EnglishWord      string   `json:"english_word" binding:"required"`
-	VietnameseWord   string   `json:"vietnamese_word" binding:"required"`
+	VietnameseWord   string   `json:"vietnamese_word"`
 	EnglishSentences []string `json:"english_sentences"`
 	TopicID          string   `json:"topic_id"`
 }
