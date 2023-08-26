@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+	"lla/auth"
 	db "lla/db/sqlc"
 
 	fs "lla/golibs/file_store"
@@ -9,15 +11,24 @@ import (
 )
 
 type Server struct {
-	router    *gin.Engine
-	store     db.Store
-	fileStore fs.FileStore
+	router      *gin.Engine
+	store       db.Store
+	fileStore   fs.FileStore
+	tokenIssuer auth.TokenIssuer
 }
 
 func NewServer(store db.Store, filestore fs.FileStore) (*Server, error) {
+
+	// TODO: move secret key to secret manager
+	issuer, err := auth.NewPasetoTokenIssuer("12345678901234567890123456789012")
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token issuer: %w", err)
+	}
+
 	server := &Server{
-		store:     store,
-		fileStore: filestore,
+		store:       store,
+		fileStore:   filestore,
+		tokenIssuer: issuer,
 	}
 
 	server.SetupRouter()
