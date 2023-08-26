@@ -21,8 +21,8 @@ LLA backend source code
 
 # Highlight features
 
-- Authentication with JWT
+- Authentication with [PASETO](https://paseto.io/)
 
-- Upload file to GCS (Google Cloud Storage)
+- Upload file to GCS (Google Cloud Storage) using [resumable upload](https://cloud.google.com/storage/docs/resumable-uploads)
 
 - Flashcard with spaced repetition

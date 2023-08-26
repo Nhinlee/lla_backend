@@ -42,6 +42,10 @@ func (s *Server) SetupRouter() {
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
 
+	// Auth
+	// router.Use(auth.AuthMiddleware(s.tokenIssuer))
+	router.POST("/login", s.handleLogin)
+
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
 	// router.POST("/delete_object", s.handleDeleteObject)
