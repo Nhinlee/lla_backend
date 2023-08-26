@@ -34,21 +34,25 @@ func (s *Server) handleStartLearningFlashcards(c *gin.Context) {
 }
 
 type CompleteFlashCardsRequest struct {
-	TopicIDs []string `json:"topic_ids" binding:"required"`
+	IDs []string `json:"ids" binding:"required"`
 }
 
-// func (s *Server) handleCompleteFlashcards(c *gin.Context) {
-// 	var req []entity.FlashCard
-// 	if err := c.ShouldBindJSON(&req); err != nil {
-// 		c.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
+func (s *Server) handleCompleteFlashcards(c *gin.Context) {
+	var req CompleteFlashCardsRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// 	lis := entity.CreateLIsFromFlashCards(req)
-// 	if err := s.store.CompleteLearningItems(c, lis); err != nil {
-// 		c.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return
-// 	}
+	res := s.store.UpdateCompletedAt(c, req.IDs)
+	res.Exec(func(i int, err error) {
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	})
 
-// 	c.JSON(http.StatusOK, req)
-// }
+	c.JSON(http.StatusOK, gin.H{
+		"message": "OK",
+	})
+}

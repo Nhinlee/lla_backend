@@ -48,6 +48,7 @@ func (s *Server) SetupRouter() {
 
 	// Flashcards
 	router.POST("/flashcards/learning", s.handleStartLearningFlashcards)
+	router.POST("/flashcards/complete", s.handleCompleteFlashcards)
 
 	s.router = router
 }

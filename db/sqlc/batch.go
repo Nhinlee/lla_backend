@@ -10,7 +10,6 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var (
@@ -20,7 +19,7 @@ var (
 const updateCompletedAt = `-- name: UpdateCompletedAt :batchexec
 UPDATE learning_items
 SET completed_at = NOW()
-WHERE topic_id = $1
+WHERE id = $1
 `
 
 type UpdateCompletedAtBatchResults struct {
@@ -29,16 +28,16 @@ type UpdateCompletedAtBatchResults struct {
 	closed bool
 }
 
-func (q *Queries) UpdateCompletedAt(ctx context.Context, topicID []pgtype.Text) *UpdateCompletedAtBatchResults {
+func (q *Queries) UpdateCompletedAt(ctx context.Context, id []string) *UpdateCompletedAtBatchResults {
 	batch := &pgx.Batch{}
-	for _, a := range topicID {
+	for _, a := range id {
 		vals := []interface{}{
 			a,
 		}
 		batch.Queue(updateCompletedAt, vals...)
 	}
 	br := q.db.SendBatch(ctx, batch)
-	return &UpdateCompletedAtBatchResults{br, len(topicID), false}
+	return &UpdateCompletedAtBatchResults{br, len(id), false}
 }
 
 func (b *UpdateCompletedAtBatchResults) Exec(f func(int, error)) {

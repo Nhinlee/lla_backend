@@ -7,4 +7,4 @@ LIMIT $2;
 -- name: UpdateCompletedAt :batchexec
 UPDATE learning_items
 SET completed_at = NOW()
-WHERE topic_id = $1;
+WHERE id = $1;
