@@ -5,22 +5,21 @@
 package db
 
 import (
-	"database/sql"
-	"time"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type LearningItem struct {
-	ID               string         `json:"id"`
-	ImageLink        string         `json:"image_link"`
-	EnglishWord      string         `json:"english_word"`
-	VietnameseWord   sql.NullString `json:"vietnamese_word"`
-	EnglishSentences []string       `json:"english_sentences"`
-	CreatedAt        time.Time      `json:"created_at"`
-	UpdatedAt        time.Time      `json:"updated_at"`
-	CompletedAt      sql.NullTime   `json:"completed_at"`
-	DeletedAt        sql.NullTime   `json:"deleted_at"`
-	UserID           sql.NullString `json:"user_id"`
-	TopicID          sql.NullString `json:"topic_id"`
+	ID               string             `json:"id"`
+	ImageLink        string             `json:"image_link"`
+	EnglishWord      string             `json:"english_word"`
+	VietnameseWord   pgtype.Text        `json:"vietnamese_word"`
+	EnglishSentences []string           `json:"english_sentences"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt        pgtype.Timestamptz `json:"updated_at"`
+	CompletedAt      pgtype.Timestamptz `json:"completed_at"`
+	DeletedAt        pgtype.Timestamptz `json:"deleted_at"`
+	UserID           pgtype.Text        `json:"user_id"`
+	TopicID          pgtype.Text        `json:"topic_id"`
 }
 
 type Test struct {
@@ -28,20 +27,20 @@ type Test struct {
 }
 
 type Topic struct {
-	ID        string       `json:"id"`
-	Name      string       `json:"name"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID        string             `json:"id"`
+	Name      string             `json:"name"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+	DeletedAt pgtype.Timestamptz `json:"deleted_at"`
 }
 
 type User struct {
-	ID                string       `json:"id"`
-	FirstName         string       `json:"first_name"`
-	LastName          string       `json:"last_name"`
-	Email             string       `json:"email"`
-	EncryptedPassword string       `json:"encrypted_password"`
-	CreatedAt         time.Time    `json:"created_at"`
-	UpdatedAt         time.Time    `json:"updated_at"`
-	DeletedAt         sql.NullTime `json:"deleted_at"`
+	ID                string             `json:"id"`
+	FirstName         string             `json:"first_name"`
+	LastName          string             `json:"last_name"`
+	Email             string             `json:"email"`
+	EncryptedPassword string             `json:"encrypted_password"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
+	DeletedAt         pgtype.Timestamptz `json:"deleted_at"`
 }

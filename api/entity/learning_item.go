@@ -23,7 +23,7 @@ func CreateLearningItemFromLI(li *db.LearningItem) *LearningItem {
 		EnglishWord:      li.EnglishWord,
 		VietnameseWord:   li.VietnameseWord.String,
 		EnglishSentences: li.EnglishSentences,
-		CreatedAt:        li.CreatedAt,
+		CreatedAt:        li.CreatedAt.Time,
 		UserID:           li.UserID.String,
 		TopicID:          li.TopicID.String,
 	}

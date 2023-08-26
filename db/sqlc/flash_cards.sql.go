@@ -7,9 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const getLearningItemsByTopicAndCompleted = `-- name: GetLearningItemsByTopicAndCompleted :many
@@ -20,12 +19,12 @@ LIMIT $2
 `
 
 type GetLearningItemsByTopicAndCompletedParams struct {
-	TopicID sql.NullString `json:"topic_id"`
-	Limit   int32          `json:"limit"`
+	TopicID pgtype.Text `json:"topic_id"`
+	Limit   int32       `json:"limit"`
 }
 
 func (q *Queries) GetLearningItemsByTopicAndCompleted(ctx context.Context, arg GetLearningItemsByTopicAndCompletedParams) ([]LearningItem, error) {
-	rows, err := q.db.QueryContext(ctx, getLearningItemsByTopicAndCompleted, arg.TopicID, arg.Limit)
+	rows, err := q.db.Query(ctx, getLearningItemsByTopicAndCompleted, arg.TopicID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +37,7 @@ func (q *Queries) GetLearningItemsByTopicAndCompleted(ctx context.Context, arg G
 			&i.ImageLink,
 			&i.EnglishWord,
 			&i.VietnameseWord,
-			pq.Array(&i.EnglishSentences),
+			&i.EnglishSentences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
@@ -49,9 +48,6 @@ func (q *Queries) GetLearningItemsByTopicAndCompleted(ctx context.Context, arg G
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

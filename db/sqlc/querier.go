@@ -6,6 +6,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
@@ -19,6 +21,7 @@ type Querier interface {
 	GetLearningItemsByTopicAndCompleted(ctx context.Context, arg GetLearningItemsByTopicAndCompletedParams) ([]LearningItem, error)
 	GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopicsAndTotalLearningItemsRow, error)
 	HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
+	UpdateCompletedAt(ctx context.Context, topicID []pgtype.Text) *UpdateCompletedAtBatchResults
 	UpdateLearningItem(ctx context.Context, arg UpdateLearningItemParams) error
 }
 

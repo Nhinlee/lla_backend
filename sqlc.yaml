@@ -1,11 +1,30 @@
-version: 1
-packages:
-  - path: "./db/sqlc"
-    name: "db"
-    engine: "postgresql"
-    schema: "./db/migration"
-    queries: "./db/query"
-    emit_json_tags: true
-    emit_exact_table_names: false
-    emit_interface: true
-    emit_empty_slices: true
+version: "2"
+sql:
+- schema: "./db/migration"
+  queries: "./db/query"
+  engine: "postgresql"
+  gen:
+    go: 
+      package: "db"
+      out: "./db/sqlc"
+      sql_package: "pgx/v5"
+
+      emit_json_tags: true
+      emit_exact_table_names: false
+      emit_interface: true
+      emit_empty_slices: true
+      
+  rules:
+    - sqlc/db-prepare
+
+# version: 1
+# packages:
+#   - path: "./db/sqlc"
+#     name: "db"
+#     engine: "postgresql"
+#     schema: "./db/migration"
+#     queries: "./db/query"
+#     emit_json_tags: true
+#     emit_exact_table_names: false
+#     emit_interface: true
+#     emit_empty_slices: true

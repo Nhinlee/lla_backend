@@ -29,7 +29,7 @@ type CreateTopicParams struct {
 }
 
 func (q *Queries) CreateTopic(ctx context.Context, arg CreateTopicParams) (Topic, error) {
-	row := q.db.QueryRowContext(ctx, createTopic, arg.ID, arg.Name)
+	row := q.db.QueryRow(ctx, createTopic, arg.ID, arg.Name)
 	var i Topic
 	err := row.Scan(
 		&i.ID,
@@ -46,7 +46,7 @@ UPDATE topics SET deleted_at = now() WHERE id = $1 RETURNING id, name, created_a
 `
 
 func (q *Queries) DeleteTopic(ctx context.Context, id string) (Topic, error) {
-	row := q.db.QueryRowContext(ctx, deleteTopic, id)
+	row := q.db.QueryRow(ctx, deleteTopic, id)
 	var i Topic
 	err := row.Scan(
 		&i.ID,
@@ -70,7 +70,7 @@ type GetAllTopicsRow struct {
 }
 
 func (q *Queries) GetAllTopics(ctx context.Context) ([]GetAllTopicsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getAllTopics)
+	rows, err := q.db.Query(ctx, getAllTopics)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +82,6 @@ func (q *Queries) GetAllTopics(ctx context.Context) ([]GetAllTopicsRow, error) {
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -107,7 +104,7 @@ type GetTopicsAndTotalLearningItemsRow struct {
 }
 
 func (q *Queries) GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopicsAndTotalLearningItemsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getTopicsAndTotalLearningItems)
+	rows, err := q.db.Query(ctx, getTopicsAndTotalLearningItems)
 	if err != nil {
 		return nil, err
 	}
@@ -119,9 +116,6 @@ func (q *Queries) GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopi
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

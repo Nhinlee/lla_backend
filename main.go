@@ -1,7 +1,7 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"lla/api"
 	"lla/config"
@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -21,7 +22,7 @@ func main() {
 	}
 
 	// Connect to database
-	conn, err := sql.Open("postgres", config.DBConfig.GetDBConnection())
+	conn, err := pgx.Connect(context.Background(), config.DBConfig.GetDBConnection())
 	if err != nil {
 		log.Fatal("cannot connect to database: ", err)
 	} else {

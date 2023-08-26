@@ -1,12 +1,12 @@
 package api
 
 import (
-	"database/sql"
 	"lla/api/entity"
 	db "lla/db/sqlc"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/oklog/ulid/v2"
 )
 
@@ -30,9 +30,9 @@ func (s *Server) handleCreateLearningItem(c *gin.Context) {
 		ID:               ulid.Make().String(),
 		ImageLink:        req.ImageLink,
 		EnglishWord:      req.EnglishWord,
-		VietnameseWord:   sql.NullString{String: req.VietnameseWord, Valid: req.VietnameseWord != ""},
+		VietnameseWord:   pgtype.Text{String: req.VietnameseWord},
 		EnglishSentences: req.EnglishSentences,
-		TopicID:          sql.NullString{String: req.TopicID, Valid: req.TopicID != ""},
+		TopicID:          pgtype.Text{String: req.TopicID},
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -43,17 +43,6 @@ func (s *Server) handleCreateLearningItem(c *gin.Context) {
 		"id": learningItem.ID,
 	})
 }
-
-// type LearningItem struct {
-// 	ID               string   `json:"id"`
-// 	ImageLink        string   `json:"image_link"`
-// 	EnglishWord      string   `json:"english_word"`
-// 	VietnameseWord   string   `json:"vietnamese_word"`
-// 	EnglishSentences []string `json:"english_sentences"`
-// 	CreatedAt        string   `json:"created_at"`
-// 	UserID           string   `json:"user_id"`
-// 	TopicID          string   `json:"topic_id"`
-// }
 
 func (s *Server) handleGetLearningItems(c *gin.Context) {
 	learningItems, err := s.store.GetAllLearningItems(c)
@@ -112,7 +101,7 @@ func (s *Server) handleUpdateLearningItem(c *gin.Context) {
 	}
 
 	if req.VietnameseWord != "" {
-		updatedItem.VietnameseWord = sql.NullString{String: req.VietnameseWord, Valid: req.VietnameseWord != ""}
+		updatedItem.VietnameseWord = pgtype.Text{String: req.VietnameseWord, Valid: req.VietnameseWord != ""}
 	}
 
 	if len(req.EnglishSentences) > 0 {
@@ -120,7 +109,7 @@ func (s *Server) handleUpdateLearningItem(c *gin.Context) {
 	}
 
 	if req.TopicID != "" {
-		updatedItem.TopicID = sql.NullString{String: req.TopicID, Valid: req.TopicID != ""}
+		updatedItem.TopicID = pgtype.Text{String: req.TopicID, Valid: req.TopicID != ""}
 	}
 
 	err = s.store.UpdateLearningItem(c, db.UpdateLearningItemParams{

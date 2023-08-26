@@ -21,7 +21,7 @@ func CreateFlashCardFromLI(li *db.LearningItem) *FlashCard {
 		ImageLink:        li.ImageLink,
 		EnglishWord:      li.EnglishWord,
 		EnglishSentences: li.EnglishSentences,
-		CreatedAt:        li.CreatedAt,
+		CreatedAt:        li.CompletedAt.Time,
 	}
 
 	if li.CompletedAt.Valid {

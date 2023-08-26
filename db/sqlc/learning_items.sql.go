@@ -7,9 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createLearningItem = `-- name: CreateLearningItem :one
@@ -37,22 +36,22 @@ INSERT INTO learning_items (
 `
 
 type CreateLearningItemParams struct {
-	ID               string         `json:"id"`
-	ImageLink        string         `json:"image_link"`
-	EnglishWord      string         `json:"english_word"`
-	VietnameseWord   sql.NullString `json:"vietnamese_word"`
-	EnglishSentences []string       `json:"english_sentences"`
-	UserID           sql.NullString `json:"user_id"`
-	TopicID          sql.NullString `json:"topic_id"`
+	ID               string      `json:"id"`
+	ImageLink        string      `json:"image_link"`
+	EnglishWord      string      `json:"english_word"`
+	VietnameseWord   pgtype.Text `json:"vietnamese_word"`
+	EnglishSentences []string    `json:"english_sentences"`
+	UserID           pgtype.Text `json:"user_id"`
+	TopicID          pgtype.Text `json:"topic_id"`
 }
 
 func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItemParams) (LearningItem, error) {
-	row := q.db.QueryRowContext(ctx, createLearningItem,
+	row := q.db.QueryRow(ctx, createLearningItem,
 		arg.ID,
 		arg.ImageLink,
 		arg.EnglishWord,
 		arg.VietnameseWord,
-		pq.Array(arg.EnglishSentences),
+		arg.EnglishSentences,
 		arg.UserID,
 		arg.TopicID,
 	)
@@ -62,7 +61,7 @@ func (q *Queries) CreateLearningItem(ctx context.Context, arg CreateLearningItem
 		&i.ImageLink,
 		&i.EnglishWord,
 		&i.VietnameseWord,
-		pq.Array(&i.EnglishSentences),
+		&i.EnglishSentences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
@@ -78,14 +77,14 @@ UPDATE learning_items SET deleted_at = now() WHERE id = $1 RETURNING id, image_l
 `
 
 func (q *Queries) DeleteLearningItem(ctx context.Context, id string) (LearningItem, error) {
-	row := q.db.QueryRowContext(ctx, deleteLearningItem, id)
+	row := q.db.QueryRow(ctx, deleteLearningItem, id)
 	var i LearningItem
 	err := row.Scan(
 		&i.ID,
 		&i.ImageLink,
 		&i.EnglishWord,
 		&i.VietnameseWord,
-		pq.Array(&i.EnglishSentences),
+		&i.EnglishSentences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
@@ -103,7 +102,7 @@ ORDER BY created_at DESC
 `
 
 func (q *Queries) GetAllLearningItems(ctx context.Context) ([]LearningItem, error) {
-	rows, err := q.db.QueryContext(ctx, getAllLearningItems)
+	rows, err := q.db.Query(ctx, getAllLearningItems)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +115,7 @@ func (q *Queries) GetAllLearningItems(ctx context.Context) ([]LearningItem, erro
 			&i.ImageLink,
 			&i.EnglishWord,
 			&i.VietnameseWord,
-			pq.Array(&i.EnglishSentences),
+			&i.EnglishSentences,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.CompletedAt,
@@ -127,9 +126,6 @@ func (q *Queries) GetAllLearningItems(ctx context.Context) ([]LearningItem, erro
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -143,14 +139,14 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetLearningItemById(ctx context.Context, id string) (LearningItem, error) {
-	row := q.db.QueryRowContext(ctx, getLearningItemById, id)
+	row := q.db.QueryRow(ctx, getLearningItemById, id)
 	var i LearningItem
 	err := row.Scan(
 		&i.ID,
 		&i.ImageLink,
 		&i.EnglishWord,
 		&i.VietnameseWord,
-		pq.Array(&i.EnglishSentences),
+		&i.EnglishSentences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
@@ -166,14 +162,14 @@ DELETE FROM learning_items WHERE id = $1 RETURNING id, image_link, english_word,
 `
 
 func (q *Queries) HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error) {
-	row := q.db.QueryRowContext(ctx, hardDeleteLearningItem, id)
+	row := q.db.QueryRow(ctx, hardDeleteLearningItem, id)
 	var i LearningItem
 	err := row.Scan(
 		&i.ID,
 		&i.ImageLink,
 		&i.EnglishWord,
 		&i.VietnameseWord,
-		pq.Array(&i.EnglishSentences),
+		&i.EnglishSentences,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.CompletedAt,
@@ -197,22 +193,22 @@ WHERE id = $1
 `
 
 type UpdateLearningItemParams struct {
-	ID               string         `json:"id"`
-	ImageLink        string         `json:"image_link"`
-	EnglishWord      string         `json:"english_word"`
-	VietnameseWord   sql.NullString `json:"vietnamese_word"`
-	EnglishSentences []string       `json:"english_sentences"`
-	CompletedAt      sql.NullTime   `json:"completed_at"`
-	TopicID          sql.NullString `json:"topic_id"`
+	ID               string             `json:"id"`
+	ImageLink        string             `json:"image_link"`
+	EnglishWord      string             `json:"english_word"`
+	VietnameseWord   pgtype.Text        `json:"vietnamese_word"`
+	EnglishSentences []string           `json:"english_sentences"`
+	CompletedAt      pgtype.Timestamptz `json:"completed_at"`
+	TopicID          pgtype.Text        `json:"topic_id"`
 }
 
 func (q *Queries) UpdateLearningItem(ctx context.Context, arg UpdateLearningItemParams) error {
-	_, err := q.db.ExecContext(ctx, updateLearningItem,
+	_, err := q.db.Exec(ctx, updateLearningItem,
 		arg.ID,
 		arg.ImageLink,
 		arg.EnglishWord,
 		arg.VietnameseWord,
-		pq.Array(arg.EnglishSentences),
+		arg.EnglishSentences,
 		arg.CompletedAt,
 		arg.TopicID,
 	)

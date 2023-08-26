@@ -17,6 +17,7 @@ LLA backend source code
 - Cloud: Heroku, DigitalOcean
 - API Documentation: // TODO
 - API Testing: Postman
+- Cloud Storage: Google Cloud Storage
 
 # Highlight features
 
