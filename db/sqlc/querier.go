@@ -11,6 +11,7 @@ import (
 type Querier interface {
 	CreateLearningItem(ctx context.Context, arg CreateLearningItemParams) (LearningItem, error)
 	CreateTopic(ctx context.Context, arg CreateTopicParams) (Topic, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) error
 	DeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
 	DeleteTopic(ctx context.Context, id string) (Topic, error)
 	GetAllLearningItems(ctx context.Context) ([]LearningItem, error)
@@ -18,9 +19,13 @@ type Querier interface {
 	GetLearningItemById(ctx context.Context, id string) (LearningItem, error)
 	GetLearningItemsByTopicAndCompleted(ctx context.Context, arg GetLearningItemsByTopicAndCompletedParams) ([]LearningItem, error)
 	GetTopicsAndTotalLearningItems(ctx context.Context) ([]GetTopicsAndTotalLearningItemsRow, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserById(ctx context.Context, id string) (User, error)
+	GetUsers(ctx context.Context) ([]User, error)
 	HardDeleteLearningItem(ctx context.Context, id string) (LearningItem, error)
 	UpdateCompletedAt(ctx context.Context, id []string) *UpdateCompletedAtBatchResults
 	UpdateLearningItem(ctx context.Context, arg UpdateLearningItemParams) error
+	UpdateUser(ctx context.Context, arg UpdateUserParams) error
 }
 
 var _ Querier = (*Queries)(nil)

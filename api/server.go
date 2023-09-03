@@ -45,6 +45,7 @@ func (s *Server) SetupRouter() {
 	// Auth
 	// router.Use(auth.AuthMiddleware(s.tokenIssuer))
 	router.POST("/login", s.handleLogin)
+	router.POST("/signup", s.handleSignUp)
 
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
