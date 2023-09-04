@@ -23,7 +23,7 @@ func (s *Server) handleStartLearningFlashcards(c *gin.Context) {
 
 	lis, err := s.store.GetLearningItemsByTopicAndCompleted(c, db.GetLearningItemsByTopicAndCompletedParams{
 		Limit:   req.Limit,
-		TopicID: pgtype.Text{String: req.TopicID},
+		TopicID: pgtype.Text{String: req.TopicID, Valid: true},
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
