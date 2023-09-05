@@ -11,7 +11,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
 
@@ -21,14 +21,22 @@ func main() {
 		log.Fatal("cannot load config: ", error)
 	}
 
-	// Connect to database
-	conn, err := pgx.Connect(context.Background(), config.DBConfig.GetDBConnection())
+	// Create a connection pool
+	configDB := config.DBConfig.GetDBConnection()
+	poolConfig, err := pgxpool.ParseConfig(configDB)
 	if err != nil {
-		log.Fatal("cannot connect to database: ", err)
-	} else {
-		fmt.Println("connect to database successfully!")
+		log.Fatal("cannot parse connection pool config: ", err)
 	}
-	store := db.NewStore(conn)
+	poolConfig.MaxConns = 10
+
+	// Connect to database
+	pool, err := pgxpool.New(context.Background(), poolConfig.ConnString())
+	if err != nil {
+		log.Fatal("cannot create connection pool: ", err)
+	}
+	defer pool.Close()
+
+	store := db.NewStore(pool)
 
 	// Connect to file store (GCS)
 	gcsStore, err := fs.NewGCSFileStore()
