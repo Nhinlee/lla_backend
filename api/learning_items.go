@@ -30,9 +30,9 @@ func (s *Server) handleCreateLearningItem(c *gin.Context) {
 		ID:               ulid.Make().String(),
 		ImageLink:        req.ImageLink,
 		EnglishWord:      req.EnglishWord,
-		VietnameseWord:   pgtype.Text{String: req.VietnameseWord},
+		VietnameseWord:   pgtype.Text{String: req.VietnameseWord, Valid: req.VietnameseWord != ""},
 		EnglishSentences: req.EnglishSentences,
-		TopicID:          pgtype.Text{String: req.TopicID},
+		TopicID:          pgtype.Text{String: req.TopicID, Valid: req.TopicID != ""},
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, errorResponse(err))
