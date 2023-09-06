@@ -7,6 +7,7 @@ INSERT INTO learning_items (
     english_sentences,
     created_at,
     updated_at,
+    completed_at,
     user_id,
     topic_id
 ) VALUES (
@@ -15,6 +16,7 @@ INSERT INTO learning_items (
     $3,
     $4,
     $5,
+    now(),
     now(),
     now(),
     $6,
