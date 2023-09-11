@@ -1,7 +1,7 @@
 package api
 
 import (
-	"lla/api/entity"
+	"lla/api/domain"
 	db "lla/db/sqlc"
 	"net/http"
 
@@ -30,7 +30,7 @@ func (s *Server) handleStartLearningFlashcards(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entity.CreateFlashCardsFromLIs(lis))
+	c.JSON(http.StatusOK, domain.CreateFlashCardsFromLIs(lis))
 }
 
 type CompleteFlashCardsRequest struct {

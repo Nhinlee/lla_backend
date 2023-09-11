@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+	"lla/api/domain"
 	db "lla/db/sqlc"
 	"net/http"
 	"time"
@@ -97,4 +99,21 @@ func (s *Server) handleLogin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
+}
+
+func (s *Server) handleGetUserProfile(ctx *gin.Context) {
+	id := ctx.Param("id")
+	fmt.Printf("id: %s\n", id)
+	entity, err := s.store.GetUserById(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	user := domain.User{}
+	user.FromEntity(&entity)
+
+	ctx.JSON(http.StatusOK, user)
 }

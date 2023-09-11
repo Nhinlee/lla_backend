@@ -1,4 +1,4 @@
-package entity
+package domain
 
 import (
 	db "lla/db/sqlc"

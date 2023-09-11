@@ -44,7 +44,7 @@ func (s *Server) SetupRouter() {
 	router.POST("/signup", s.handleSignUp)
 
 	// Middleware
-	router.Use(auth.AuthMiddleware(s.tokenIssuer))
+	// router.Use(auth.AuthMiddleware(s.tokenIssuer))
 
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
@@ -67,6 +67,9 @@ func (s *Server) SetupRouter() {
 	// Flashcards
 	router.POST("/flashcards/learning", s.handleStartLearningFlashcards)
 	router.POST("/flashcards/complete", s.handleCompleteFlashcards)
+
+	// Users
+	router.GET("/user/profile/:id", s.handleGetUserProfile)
 
 	s.router = router
 }
