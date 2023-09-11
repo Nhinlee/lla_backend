@@ -39,13 +39,13 @@ func NewServer(store db.Store, filestore fs.FileStore) (*Server, error) {
 func (s *Server) SetupRouter() {
 	router := gin.Default()
 
-	// TEST purpose only
-	router.GET("/lla", s.handleGetLla)
-
 	// Auth
 	router.Use(auth.AuthMiddleware(s.tokenIssuer))
 	router.POST("/login", s.handleLogin)
 	router.POST("/signup", s.handleSignUp)
+
+	// TEST purpose only
+	router.GET("/lla", s.handleGetLla)
 
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
