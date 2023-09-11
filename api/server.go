@@ -39,10 +39,12 @@ func NewServer(store db.Store, filestore fs.FileStore) (*Server, error) {
 func (s *Server) SetupRouter() {
 	router := gin.Default()
 
-	// Auth
-	router.Use(auth.AuthMiddleware(s.tokenIssuer))
+	// Public
 	router.POST("/login", s.handleLogin)
 	router.POST("/signup", s.handleSignUp)
+
+	// Middleware
+	router.Use(auth.AuthMiddleware(s.tokenIssuer))
 
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
