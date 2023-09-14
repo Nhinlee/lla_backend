@@ -21,6 +21,10 @@ LLA backend source code
 
 # Highlight features
 
+- AI generate image labels using [Google Cloud Vision API](https://cloud.google.com/vision/docs/labels)
+
+- AI generate sentences using [gpt-3.5-turbo model](https://platform.openai.com/docs/guides/gpt)
+
 - Authentication with [PASETO](https://paseto.io/)
 
 - Upload file to GCS (Google Cloud Storage) using [resumable upload](https://cloud.google.com/storage/docs/resumable-uploads)
