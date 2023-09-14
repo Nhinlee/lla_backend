@@ -30,3 +30,9 @@ LLA backend source code
 - Upload file to GCS (Google Cloud Storage) using [resumable upload](https://cloud.google.com/storage/docs/resumable-uploads)
 
 - Flashcard with spaced repetition
+
+# Additional Docs
+
+## Vision AI API
+- https://cloud.google.com/vision/docs/authentication
+- https://cloud.google.com/vision/docs

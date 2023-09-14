@@ -47,7 +47,7 @@ func (s *Server) SetupRouter() {
 	router.POST("/signup", s.handleSignUp)
 
 	// Middleware
-	// router.Use(auth.AuthMiddleware(s.tokenIssuer))
+	router.Use(auth.AuthMiddleware(s.tokenIssuer))
 
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
