@@ -7,6 +7,7 @@ import (
 	"lla/config"
 	db "lla/db/sqlc"
 	fs "lla/golibs/file_store"
+	"lla/golibs/vision_ai"
 
 	"log"
 	"os"
@@ -44,11 +45,14 @@ func main() {
 		log.Fatal("cannot connect to file store: ", err)
 	}
 
-	runRestfulServer(store, gcsStore)
+	// Setup authentication for Vision API
+	visionAI := vision_ai.NewVisionAI()
+
+	runRestfulServer(store, gcsStore, visionAI)
 }
 
-func runRestfulServer(store db.Store, fileStore fs.FileStore) {
-	server, err := api.NewServer(store, fileStore)
+func runRestfulServer(store db.Store, fileStore fs.FileStore, visionAI *vision_ai.VisionAI) {
+	server, err := api.NewServer(store, fileStore, visionAI)
 	if err != nil {
 		log.Fatal("cannot create server: ", err)
 	}

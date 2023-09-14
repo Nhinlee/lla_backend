@@ -128,3 +128,24 @@ func (s *Server) handleUpdateLearningItem(c *gin.Context) {
 
 	c.JSON(200, gin.H{})
 }
+
+type GenerateLearningItemLabelRequest struct {
+	ImageName string `json:"image_name" binding:"required"`
+}
+
+func (s *Server) handleGenerateLearningItemLabel(c *gin.Context) {
+	var req GenerateLearningItemLabelRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	labels, err := s.visionAI.DetectLabelsFromImageURI(c.Writer, req.ImageName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(200, labels)
+}

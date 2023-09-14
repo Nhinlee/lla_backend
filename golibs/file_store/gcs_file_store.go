@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"lla/golibs"
 	"net/http"
 	"net/url"
 	"os"
@@ -13,12 +14,6 @@ import (
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
-)
-
-const (
-	bucketName = "llapp-bucket"
-	saKeyEnv   = "GOOGLE_SERVICE_ACCOUNT_KEY"
-	saEmailEnv = "GOOGLE_SERVICE_ACCOUNT"
 )
 
 type GCSFileStore struct {
@@ -30,9 +25,9 @@ type GCSFileStore struct {
 func NewGCSFileStore() (*GCSFileStore, error) {
 	ctx := context.Background()
 
-	saEmail := os.Getenv(saEmailEnv)
+	saEmail := os.Getenv(golibs.SAEmailEnv)
 
-	serviceAccountKeyEncoded := os.Getenv(saKeyEnv)
+	serviceAccountKeyEncoded := os.Getenv(golibs.SAKeyEnv)
 	serviceAccountKeyStr, err := base64.StdEncoding.DecodeString(serviceAccountKeyEncoded)
 	if err != nil {
 		return nil, err
@@ -71,7 +66,7 @@ func (s *GCSFileStore) GenerateResumableUploadURL(objectName string) (*url.URL, 
 		}),
 	}
 
-	presignedURL, err := s.client.Bucket(bucketName).SignedURL(objectName, opts)
+	presignedURL, err := s.client.Bucket(golibs.BucketName).SignedURL(objectName, opts)
 	if err != nil {
 		return nil, fmt.Errorf("cannot generate presigned URL: %w", err)
 	}
@@ -113,7 +108,7 @@ func (s *GCSFileStore) GeneratePublicObjectURL(objectName string) string {
 	} else {
 		filename = fmt.Sprintf("%s/%s", dir, url.PathEscape(filename))
 	}
-	return fmt.Sprintf("%s/%s/%s", "https://storage.googleapis.com", bucketName, filename)
+	return fmt.Sprintf("%s/%s/%s", "https://storage.googleapis.com", golibs.BucketName, filename)
 }
 
 func (g *GCSFileStore) MoveObject(ctx context.Context, srcObjectName, destObjetName string) error {
@@ -122,19 +117,19 @@ func (g *GCSFileStore) MoveObject(ctx context.Context, srcObjectName, destObjetN
 		return fmt.Errorf("storage.NewClient: %v", err)
 	}
 
-	src := client.Bucket(bucketName).Object(srcObjectName)
-	dst := client.Bucket(bucketName).Object(destObjetName)
+	src := client.Bucket(golibs.BucketName).Object(srcObjectName)
+	dst := client.Bucket(golibs.BucketName).Object(destObjetName)
 
 	if _, err := src.Attrs(ctx); err != nil {
-		return fmt.Errorf("Object(%s/%s).Attrs: %v", bucketName, srcObjectName, err)
+		return fmt.Errorf("Object(%s/%s).Attrs: %v", golibs.BucketName, srcObjectName, err)
 	}
 
 	if _, err := dst.CopierFrom(src).Run(ctx); err != nil {
-		return fmt.Errorf("Object(%s).CopierFrom(%s).Run: %v", bucketName, srcObjectName, err)
+		return fmt.Errorf("Object(%s).CopierFrom(%s).Run: %v", golibs.BucketName, srcObjectName, err)
 	}
 
 	if err := src.Delete(ctx); err != nil {
-		return fmt.Errorf("Object(%s/%s).Delete: %v", bucketName, srcObjectName, err)
+		return fmt.Errorf("Object(%s/%s).Delete: %v", golibs.BucketName, srcObjectName, err)
 	}
 	return nil
 }

@@ -22,3 +22,4 @@ go.work
 
 # Local environment variables file
 .env
+.sa.json
