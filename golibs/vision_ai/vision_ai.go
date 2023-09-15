@@ -42,7 +42,7 @@ func (v *VisionAI) DetectLabelsFromImageURI(w io.Writer, fileName string) ([]str
 	}
 
 	image := vision.NewImageFromURI(fmt.Sprintf("gs://%s/%s", golibs.BucketName, fileName))
-	annotations, err := client.DetectLabels(ctx, image, nil, 10)
+	annotations, err := client.DetectLabels(ctx, image, nil, 5)
 	if err != nil {
 		return nil, err
 	}
