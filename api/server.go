@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lla/auth"
 	db "lla/db/sqlc"
+	"os"
 
 	fs "lla/golibs/file_store"
 	"lla/golibs/open_ai"
@@ -23,8 +24,8 @@ type Server struct {
 
 func NewServer(store db.Store, filestore fs.FileStore, visionAI *vision_ai.VisionAI, openAI *open_ai.OpenAI) (*Server, error) {
 
-	// TODO: move secret key to secret manager
-	issuer, err := auth.NewPasetoTokenIssuer("12345678901234567890123456789012")
+	symmetricKey := os.Getenv("PASETO_SYMMETRIC_KEY")
+	issuer, err := auth.NewPasetoTokenIssuer(symmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token issuer: %w", err)
 	}
