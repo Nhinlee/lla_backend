@@ -6,6 +6,7 @@ import (
 	db "lla/db/sqlc"
 
 	fs "lla/golibs/file_store"
+	"lla/golibs/open_ai"
 	"lla/golibs/vision_ai"
 
 	"github.com/gin-gonic/gin"
@@ -16,10 +17,11 @@ type Server struct {
 	store       db.Store
 	fileStore   fs.FileStore
 	visionAI    *vision_ai.VisionAI
+	openAI      *open_ai.OpenAI
 	tokenIssuer auth.TokenIssuer
 }
 
-func NewServer(store db.Store, filestore fs.FileStore, visionAI *vision_ai.VisionAI) (*Server, error) {
+func NewServer(store db.Store, filestore fs.FileStore, visionAI *vision_ai.VisionAI, openAI *open_ai.OpenAI) (*Server, error) {
 
 	// TODO: move secret key to secret manager
 	issuer, err := auth.NewPasetoTokenIssuer("12345678901234567890123456789012")
@@ -32,6 +34,7 @@ func NewServer(store db.Store, filestore fs.FileStore, visionAI *vision_ai.Visio
 		fileStore:   filestore,
 		tokenIssuer: issuer,
 		visionAI:    visionAI,
+		openAI:      openAI,
 	}
 
 	server.SetupRouter()
@@ -62,6 +65,7 @@ func (s *Server) SetupRouter() {
 	router.DELETE("/learning_items/:id", s.handleDeleteLearningItem)
 	router.PUT("/learning_items", s.handleUpdateLearningItem)
 	router.POST("/learning_items/generate_label", s.handleGenerateLearningItemLabel)
+	router.POST("/learning_items/generate_sentences", s.handleGenerateEnSentences)
 
 	// Topics
 	router.POST("/topics", s.handleUpsertTopic)

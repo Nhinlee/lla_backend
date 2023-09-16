@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"lla/api/domain"
 	db "lla/db/sqlc"
 	"net/http"
@@ -148,4 +149,27 @@ func (s *Server) handleGenerateLearningItemLabel(c *gin.Context) {
 	}
 
 	c.JSON(200, labels)
+}
+
+type GenerateEnSentencesRequest struct {
+	EnglishWord string `json:"english_word" binding:"required"`
+}
+
+func (s *Server) handleGenerateEnSentences(c *gin.Context) {
+	var req GenerateEnSentencesRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	sentences, err := s.openAI.GenerateSentences(req.EnglishWord)
+	fmt.Print(fmt.Sprintf("%v", sentences))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	c.JSON(200, sentences)
 }
