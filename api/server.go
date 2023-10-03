@@ -50,11 +50,11 @@ func (s *Server) SetupRouter() {
 	router.POST("/login", s.handleLogin)
 	router.POST("/signup", s.handleSignUp)
 
-	// Middleware
-	router.Use(auth.AuthMiddleware(s.tokenIssuer))
-
 	// TEST purpose only
 	router.GET("/lla", s.handleGetLla)
+
+	// Middleware
+	router.Use(auth.AuthMiddleware(s.tokenIssuer))
 
 	// Common
 	router.POST("/generate_resumable_upload_url", s.handleGeneratePresignedURL)
